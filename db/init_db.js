@@ -10,8 +10,10 @@ const create_sql = `CREATE TABLE IF NOT EXISTS agent(ID INTEGER PRIMARY KEY,
                                 is_etranger INTEGER ,
                                 dons INTEGER,
                                 pays VARCHAR)`
-
+const insert_sql = `INSERT INTO agent (nom,age,  salaire_brut,is_etranger,dons,pays)
+                  VALUES (?,?,?,?,?,?)`
 //db.run(sql)
 module.exports = {
-    create_sql: create_sql
+    create_sql: create_sql,
+    insert_sql: insert_sql
 };
