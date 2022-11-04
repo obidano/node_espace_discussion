@@ -32,14 +32,29 @@ app.get('/', (req, res, next) => {
 })
 
 
-app.get('/agent', (req, res, next) => {
-    sql = "SELECT * FROM quote"
+app.get('/agent/v1', (req, res, next) => {
+    sql = "SELECT * FROM agent"
 
     try {
         db.all(sql, [], (err, rows) => {
             if (err) return res.status(400).send({status: 400, success: false, error: err})
             if (rows.length < 1) return res.status(400).send({status: 400, success: false, error: "Liste agents vide"})
             res.send({data: rows})
+        })
+    } catch (e) {
+        const status_code = e.status || 500
+        res.status(status_code).send({status: status_code, success: false})
+    }
+})
+
+app.get('/agent/v2', (req, res, next) => {
+    sql = "SELECT * FROM agent"
+
+    try {
+        db.all(sql, [], (err, rows) => {
+            if (err) return res.status(400).send({status: 400, success: false, error: err})
+            if (rows.length < 1) return res.status(400).send({status: 400, success: false, error: "Liste agents vide"})
+            res.send(rows)
         })
     } catch (e) {
         const status_code = e.status || 500
