@@ -14,6 +14,6 @@ const insert_sql = `INSERT INTO agent (nom,age,  salaire_brut,is_etranger,dons,p
                   VALUES (?,?,?,?,?,?)`
 //db.run(sql)
 module.exports = {
-    create_sql: create_sql,
-    insert_sql: insert_sql
+    create_sql,
+    insert_sql
 };
