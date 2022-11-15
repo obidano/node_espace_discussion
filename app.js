@@ -10,10 +10,11 @@ const {api_create_user, api_auth_user} = require("./api/api_user");
 const {api_create_agent, api_get_agents_v2, api_get_agents_v1} = require("./api/api_agent");
 const {api_pays_v1, api_pays_v2} = require("./api/api_pays");
 const {api_taux} = require("./api/api_taux");
+const {r_index} = require("./web/render_index");
 require("dotenv").config();
 const {API_PORT, DB_NAME} = process.env;
 let sql;
-
+var path = require('path');
 // db
 const sqlite = require('sqlite3').verbose()
 const db = new sqlite.Database(`./${DB_NAME}`, sqlite.OPEN_READWRITE, (err) => {
@@ -29,17 +30,16 @@ const PORT = API_PORT;
 app.use(bodyParser.json())
 app.use(cors());
 
-app.get('/', (req, res, next) => {
-    const url_info = url.parse(req.url, true)
-    console.log("URL", url_info.path)
+const node_path = path.join(__dirname, '/node_modules/')
+const boostrap_path = path.join(node_path, 'bootstrap/dist/')
+console.log(node_path)//
+console.log(boostrap_path)//
+app.use('/bootstrap', express.static(boostrap_path));
 
-    try {
-        res.send({message: "Welcome to my ODC API Portal"})
-    } catch (e) {
-        const status_code = e.status || 500
-        res.status(status_code).send({error: e})
-    }
-})
+app.set('view engine', 'ejs')
+app.set('views', './web/views')
+
+app.get('/', r_index)
 
 app.get('/api/taux', auth_mid, api_taux)
 

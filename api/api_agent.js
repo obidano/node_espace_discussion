@@ -12,7 +12,6 @@ const {DB_NAME, APP_KEY, SALT, EXPIRATION_TIME} = process.env;
 
 const db = new sqlite.Database(`./${DB_NAME}`, sqlite.OPEN_READWRITE, (err) => {
     if (err) return console.error(err)
-    console.log('Database started...')
 })
 
 const select_agent = () => new Promise((resolve, reject) => {
