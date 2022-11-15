@@ -2,18 +2,16 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const bodyParser = require("body-parser");
-const {create_sql, insert_agent_sql, insert_user_sql} = require("./db/init_db");
+const {create_sql} = require("./db/init_db");
 const url = require('url')
-const bcrypt = require('bcryptjs')
-const jwt = require("jsonwebtoken");
-
-const {default_password, default_login, countries} = require("./utils/constantes");
+const auth_mid = require('./middleware')
 require('log-timestamp');
 const {api_create_user, api_auth_user} = require("./api/api_user");
 const {api_create_agent, api_get_agents_v2, api_get_agents_v1} = require("./api/api_agent");
 const {api_pays_v1, api_pays_v2} = require("./api/api_pays");
+const {api_taux} = require("./api/api_taux");
 require("dotenv").config();
-const {API_PORT, DB_NAME, APP_KEY, SALT, EXPIRATION_TIME} = process.env;
+const {API_PORT, DB_NAME} = process.env;
 let sql;
 
 // db
@@ -43,21 +41,7 @@ app.get('/', (req, res, next) => {
     }
 })
 
-app.get('/api/taux', (req, res, next) => {
-    const url_info = url.parse(req.url, true)
-    console.log("URL", url_info.path)
-
-    const queryObject = url.parse(req.url, true).query
-    console.log("url params", queryObject)
-
-    if (queryObject.type === "NAT") {
-        return res.send({data: {'IPR': 0.3, 'INSS': 0.16}})
-    }
-    if (queryObject.type === "EXPAT") {
-        return res.send({data: {'IPR': 0.35, 'INSS': 0.16}})
-    }
-    return res.status(400).send({error: "Type d'agent non reconnu"})
-})
+app.get('/api/taux', auth_mid, api_taux)
 
 
 app.get('/api/agent/v1', api_get_agents_v1)
