@@ -13,8 +13,17 @@ const countries = {
     FRANCE
 }
 
+const articles = [
+    {"name": "Oeuf", "prix": 500},
+    {"name": "Cahier", "prix": 1500},
+    {"name": "Margarine", "prix": 2800},
+    {"name": "Stylo", "prix": 600},
+    {"name": "Biscuit", "prix": 1000},
+]
+
 module.exports = {
     default_login,
     default_password,
-    countries
+    countries,
+    articles
 };

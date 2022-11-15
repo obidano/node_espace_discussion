@@ -1,5 +1,5 @@
 const {api_create_user, api_auth_user} = require("./api/api_user");
-const {api_create_agent, api_get_agents_v2, api_get_agents_v1} = require("./api/api_agent");
+const {api_create_vente, api_get_vente_v2, api_get_vente_v1} = require("./api/api_ventes");
 const {api_pays_v1, api_pays_v2} = require("./api/api_pays");
 const {api_taux} = require("./api/api_taux");
 const {r_index, r_submit_uid, r_vente_liste} = require("./web/render_html");
@@ -41,6 +41,7 @@ const io = require('socket.io')(http)
 
 // middleware
 const auth_mid = require('./middleware')
+const {api_articles} = require("./api/api_articles");
 
 // port
 const PORT = API_PORT;
@@ -73,19 +74,17 @@ app.get('/submit-qr', r_submit_uid)
 app.get('/ventes', r_vente_liste)
 
 app.get('/api/taux', auth_mid, api_taux)
+app.get('/api/pays/v1', auth_mid, api_pays_v1)
+
+app.get('/api/pays/v2', auth_mid, api_pays_v2)
+app.get('/api/articles', auth_mid, api_articles)
 
 
-app.get('/api/agent/v1', api_get_agents_v1)
+app.get('/api/ventes/v1', auth_mid, api_get_vente_v1)
 
-app.get('/api/agent/v2', api_get_agents_v2)
+app.get('/api/ventes/v2', auth_mid, api_get_vente_v2)
 
-
-app.get('/api/pays/v1', api_pays_v1)
-
-app.get('/api/pays/v2', api_pays_v2)
-
-
-app.post('/api/agent', api_create_agent)
+app.post('/api/vente', auth_mid, api_create_vente)
 
 app.post('/api/auth', api_auth_user)
 // create user API

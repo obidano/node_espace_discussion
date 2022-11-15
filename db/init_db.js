@@ -8,6 +8,7 @@ const create_ventes_sql = `
 CREATE TABLE IF NOT EXISTS ventes (ID INTEGER PRIMARY KEY, 
                                 produit VARCHAR,                            
                                 prix INTEGER, 
+                                quantite INTEGER, 
                                  longitude VARCHAR, 
                                 latitude VARCHAR, 
                                 status VARCHAR,
@@ -15,8 +16,9 @@ CREATE TABLE IF NOT EXISTS ventes (ID INTEGER PRIMARY KEY,
                                  FOREIGN KEY (user_id)
                             REFERENCES user (user_id) );    
                                 `
-const insert_agent_sql = `INSERT INTO agent (nom,age,  salaire_brut,is_etranger,dons,pays)
-                  VALUES (?,?,?,?,?,?)`
+const insert_ventes_sql = `INSERT INTO ventes (produit,prix,quantite,
+                    longitude,latitude,status,user_id)
+                  VALUES (?,?,?,?,?,?, ?)`
 
 const insert_user_sql = `INSERT INTO user (username,password)
                   VALUES (?,?)`
@@ -24,6 +26,6 @@ const insert_user_sql = `INSERT INTO user (username,password)
 module.exports = {
     create_user_sql,
     create_ventes_sql,
-    insert_agent_sql,
+    insert_ventes_sql,
     insert_user_sql
 };
