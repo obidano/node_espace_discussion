@@ -2,6 +2,27 @@ const {parse} = require("url");
 const qr = require("qrcode");
 const uuid = require('uuid');
 
+require('log-timestamp');
+require("dotenv").config();
+
+const sqlite = require('sqlite3').verbose()
+
+const {DB_NAME} = process.env;
+
+
+const db = new sqlite.Database(`./${DB_NAME}`, sqlite.OPEN_READWRITE, (err) => {
+    if (err) return console.error(err)
+})
+
+const select_agent = () => new Promise((resolve, reject) => {
+    sql = "SELECT * FROM agent"
+
+    db.all(sql, [], async (err, rows) => {
+        if (err) reject(err)
+        resolve(rows)
+    })
+})
+
 const generate_qrcode = (data) => new Promise((resolve, reject) => {
     qr.toDataURL(data, (err, src) => {
         if (err) reject(err);
@@ -43,7 +64,12 @@ const r_submit_uid = async (req, res) => {
 
 const r_vente_liste = async (req, res) => {
     try {
-        res.render('vente_liste.ejs', {title: "Liste des ventes"})
+        const ventes = await select_agent()
+        console.log(ventes.length, ventes)
+        res.render('vente_liste.ejs', {
+            title: "Liste des ventes",
+            ventes: ventes, count: ventes.length
+        })
     } catch (e) {
         print(e)
         const status_code = e.status || 400

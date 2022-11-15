@@ -3,7 +3,7 @@ const {api_create_agent, api_get_agents_v2, api_get_agents_v1} = require("./api/
 const {api_pays_v1, api_pays_v2} = require("./api/api_pays");
 const {api_taux} = require("./api/api_taux");
 const {r_index, r_submit_uid, r_vente_liste} = require("./web/render_html");
-const {create_sql} = require("./db/init_db");
+const {create_user_sql, create_ventes_sql} = require("./db/init_db");
 
 require('log-timestamp');
 require("dotenv").config();
@@ -17,13 +17,6 @@ const sqlite = require('sqlite3').verbose()
 var path = require('path');
 const http = require('http').Server(app)
 
-// attach http server to socket.io
-const io = require('socket.io')(http)
-
-
-// middleware
-const auth_mid = require('./middleware')
-
 // env
 const {API_PORT, DB_NAME} = process.env;
 
@@ -31,9 +24,23 @@ const {API_PORT, DB_NAME} = process.env;
 const db = new sqlite.Database(`./${DB_NAME}`, sqlite.OPEN_READWRITE, (err) => {
     if (err) return console.error(err)
     console.log('Database started...')
+
+    db.run(create_user_sql, [], (err) => {
+        if (err) console.log('error create_user_sql', err)
+    })
+
+    db.run(create_ventes_sql, [], (err) => {
+        if (err) console.log('error create_ventes_sql', err)
+    })
 })
 
-db.run(create_sql)
+
+// attach http server to socket.io
+const io = require('socket.io')(http)
+
+
+// middleware
+const auth_mid = require('./middleware')
 
 // port
 const PORT = API_PORT;

@@ -6,18 +6,46 @@
 
 <div class="container   mt-5  px-5 border">
 
-    <h4 class="text-center mb-5">Authentification Manuelle</h3>
+    <div class="row mt-5">
+        <div class="col-7">
+            <h3 class="text-center mb-5"><%= count %> ventes</h3>
 
-        <p style="color:red" id="errorID" class="text-center"></p>
-        <form>
-            <div class="form-group identifiant_qr">
-                <label for="usr">Votre identifiant de session:</label>
-                <input type="text" required class="form-control" id="session_id">
-            </div>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Produits</th>
+                    <th scope="col">Prix</th>
+                    <th scope="col">Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <% ventes.forEach((v)=>{ %>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td><%= v.nom %></td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                    </tr>
+                <% }); %>
+
+            </table>
+        </div>
+        <div class="col-5 ps-5">
+            <h3 class="text-center">Valider la vente</h3>
+            <p style="color:red" id="errorID" class="text-center"></p>
+            <form>
+                <div class="form-group identifiant_qr">
+                    <label for="usr">Valider la vente</label>
+                    <input type="text" required class="form-control" id="session_id">
+                </div>
 
 
-            <button type="submit" class="validerBtn btn btn-primary text-center d-flex">Valider</button>
-        </form>
+                <button type="submit" class="validerBtn btn btn-primary text-center d-flex">Valider</button>
+            </form>
+        </div>
+    </div>
+
 
 </div>
 
@@ -26,19 +54,11 @@
 <script>
     $(document).ready(() => {
         var errorID = $("#errorID")
-        const socket = io()
-        const session_id = $('#session_id')
 
-        socket.on('error', (msg) => {
-            console.log('error', msg)
-            errorID.html(msg)
-        })
 
         $('form').on('submit', (e) => {
             e.preventDefault()
             errorID.html('')
-            console.log('session_id', session_id.val())
-            socket.emit('checkSession', session_id.val())
 
         })
     })

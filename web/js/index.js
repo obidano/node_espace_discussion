@@ -10,6 +10,9 @@ $(document).ready(() => {
 
     socket.on("checkMySession", (msg) => {
         console.log("redirection", msg)
+        if (msg) {
+            window.location.href = '/ventes'
+        }
     })
 
     socket.on('connect', () => {

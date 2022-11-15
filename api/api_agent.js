@@ -2,12 +2,10 @@ require('log-timestamp');
 require("dotenv").config();
 
 const sqlite = require('sqlite3').verbose()
-const bcrypt = require('bcryptjs')
-const jwt = require("jsonwebtoken");
 const url = require("url");
 const {insert_agent_sql} = require("../db/init_db");
 
-const {DB_NAME, APP_KEY, SALT, EXPIRATION_TIME} = process.env;
+const {DB_NAME} = process.env;
 
 
 const db = new sqlite.Database(`./${DB_NAME}`, sqlite.OPEN_READWRITE, (err) => {
