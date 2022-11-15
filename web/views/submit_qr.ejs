@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html>
+<%- include('partials/header') %>
+<body>
+
+<div class="container   mt-5  px-5 border">
+
+    <h4 class="text-center mb-5">Authentification Manuelle</h3>
+
+        <p style="color:red" id="errorID" class="text-center"></p>
+        <form>
+            <div class="form-group identifiant_qr">
+                <label for="usr">Votre identifiant de session:</label>
+                <input type="text" required class="form-control" id="session_id">
+            </div>
+
+
+            <button type="submit" class="validerBtn btn btn-primary text-center d-flex">Valider</button>
+        </form>
+
+</div>
+
+
+<%- include('partials/scripts') %>
+<script>
+    $(document).ready(() => {
+        var errorID = $("#errorID")
+        const socket = io()
+        const session_id = $('#session_id')
+
+        socket.on('error', (msg) => {
+            console.log('error', msg)
+            errorID.html(msg)
+        })
+
+        $('form').on('submit', (e) => {
+            e.preventDefault()
+            errorID.html('')
+            console.log('session_id', session_id.val())
+            socket.emit('checkSession', session_id.val())
+
+        })
+    })
+</script>
+<!--<script src="/js/index.js"></script>-->
+
+</body>
+</html>
