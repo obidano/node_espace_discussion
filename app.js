@@ -5,11 +5,12 @@ const bodyParser = require("body-parser");
 const {create_sql, insert_sql} = require("./db/init_db");
 const url = require('url')
 const {default_password, default_login} = require("./utils/constantes");
+require('log-timestamp'); //
 let sql;
 
 // db
 const sqlite = require('sqlite3').verbose()
-const db = new sqlite.Database("./my.db", sqlite.OPEN_READWRITE, (err) => {
+const db = new sqlite.Database("./odc.db", sqlite.OPEN_READWRITE, (err) => {
     if (err) return console.error(err)
     console.log('Database started...')
 })
@@ -23,6 +24,9 @@ app.use(bodyParser.json())
 app.use(cors());
 
 app.get('/', (req, res, next) => {
+    const url_info = url.parse(req.url, true)
+    console.log("URL", url_info.path)
+
     try {
         res.send({message: "Welcome to my ODC API Portal"})
     } catch (e) {
@@ -32,8 +36,12 @@ app.get('/', (req, res, next) => {
 })
 
 app.get('/api/taux', (req, res, next) => {
+    const url_info = url.parse(req.url, true)
+    console.log("URL", url_info.path)
+
     const queryObject = url.parse(req.url, true).query
-    console.log("queryObject", queryObject)
+    console.log("url params", queryObject)
+
     if (queryObject.type === "NAT") {
         return res.send({data: {'IPR': 0.3, 'INSS': 0.16}})
     }
@@ -45,6 +53,9 @@ app.get('/api/taux', (req, res, next) => {
 
 
 app.get('/api/agent/v1', (req, res, next) => {
+    const url_info = url.parse(req.url, true)
+    console.log("URL", url_info.path)
+
     sql = "SELECT * FROM agent"
 
     try {
@@ -60,6 +71,9 @@ app.get('/api/agent/v1', (req, res, next) => {
 })
 
 app.get('/api/agent/v2', (req, res, next) => {
+    const url_info = url.parse(req.url, true)
+    console.log("URL", url_info.path)
+
     sql = "SELECT * FROM agent"
 
     try {
@@ -74,8 +88,32 @@ app.get('/api/agent/v2', (req, res, next) => {
     }
 })
 
+
+const CGO = {id: 1, name: 'RDC', sigle: 'CGO'};
+const Belgique = {id: 2, name: 'Belgique', sigle: 'BEG'};
+const USA = {id: 3, name: 'USA', sigle: 'USA'};
+const FRANCE = {id: 4, name: 'France', sigle: 'FR'};
+
+app.get('/api/pays/v1', (req, res, next) => {
+    const url_info = url.parse(req.url, true)
+    console.log("URL", url_info.path)
+
+    res.send([CGO, Belgique, USA, FRANCE])
+})
+
+app.get('/api/pays/v2', (req, res, next) => {
+    const url_info = url.parse(req.url, true)
+    console.log("URL", url_info.path)
+
+    res.send({"1": CGO, "2": Belgique, "3": USA, "4": FRANCE})
+})
+
+
 app.post('/api/agent', (req, res) => {
-    console.log("req body", req.body, typeof req.body)
+    const url_info = url.parse(req.url, true)
+    console.log("URL", url_info.path)
+    console.log("req body", req.body)
+
     try {
         const {nom, age, salaire_brut, is_etranger, dons, pays} = req.body;
         db.run(insert_sql, [nom, age, salaire_brut, is_etranger, dons, pays], (err) => {
@@ -89,10 +127,16 @@ app.post('/api/agent', (req, res) => {
     }
 })
 
-app.post('/api/auth', (req, res, next) => {
+app.post('/api/auth', async (req, res, next) => {
     const {login, password} = req.body;
+    const url_info = url.parse(req.url, true)
+    console.log("URL", url_info.path)
+    console.log("req body", req.body)
+
+    await new Promise(r => setTimeout(r, 500));
+
     if (default_login === login && default_password === password) {
-        return res.send({msg: "Authentification reussie"})
+        return res.status(200).send({msg: "Authentification reussie"})
     }
     return res.status(400).send({error: "Echec authentification"})
 })
