@@ -6,6 +6,7 @@ const {create_sql, insert_sql} = require("./db/init_db");
 const url = require('url')
 const {default_password, default_login} = require("./utils/constantes");
 require('log-timestamp'); //
+require("dotenv").config();
 let sql;
 
 // db
