@@ -2,16 +2,18 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const bodyParser = require("body-parser");
-const {create_sql, insert_sql} = require("./db/init_db");
+const {create_sql, insert_agent_sql} = require("./db/init_db");
 const url = require('url')
+const bcrypt = require('bcryptjs')
 const {default_password, default_login} = require("./utils/constantes");
 require('log-timestamp'); //
 require("dotenv").config();
+const {API_PORT, DB_NAME, APP_KEY, SALT} = process.env;
 let sql;
 
 // db
 const sqlite = require('sqlite3').verbose()
-const db = new sqlite.Database("./odc.db", sqlite.OPEN_READWRITE, (err) => {
+const db = new sqlite.Database(`./${DB_NAME}`, sqlite.OPEN_READWRITE, (err) => {
     if (err) return console.error(err)
     console.log('Database started...')
 })
@@ -19,7 +21,7 @@ const db = new sqlite.Database("./odc.db", sqlite.OPEN_READWRITE, (err) => {
 db.run(create_sql)
 
 
-const PORT = 3200;
+const PORT = API_PORT;
 
 app.use(bodyParser.json())
 app.use(cors());
@@ -117,7 +119,7 @@ app.post('/api/agent', (req, res) => {
 
     try {
         const {nom, age, salaire_brut, is_etranger, dons, pays} = req.body;
-        db.run(insert_sql, [nom, age, salaire_brut, is_etranger, dons, pays], (err) => {
+        db.run(insert_agent_sql, [nom, age, salaire_brut, is_etranger, dons, pays], (err) => {
             if (err) return res.status(400).send({error: err})
             console.log("Enregistrement agent reussi")
         })
@@ -140,6 +142,52 @@ app.post('/api/auth', async (req, res, next) => {
         return res.status(200).send({msg: "Authentification reussie"})
     }
     return res.status(400).send({error: "Echec authentification"})
+})
+
+app.post('/api/user', (req, res) => {
+    const url_info = url.parse(req.url, true)
+    console.log("URL", url_info.path)
+    console.log("req body", req.body)
+
+    try {
+        const {username, password, confirm_password} = req.body;
+
+        if (password !== confirm_password) {
+            res.status(400).send({error: 'Les mots de passe ne correspondent pas'})
+        }
+        console.log('pppp')
+        sql = "SELECT * FROM user where username = ?"
+
+        try {
+            db.all(sql, [username], async (err, rows) => {
+                if (err) return res.status(400).send({error: err})
+                if (rows.length >= 1) return res.status(400).send({error: "Cet utilisateur existe deja"})
+                console.log('salt', SALT)
+                const encryptedPassword = await bcrypt.hash(password, SALT);
+
+                db.run(insert_agent_sql, [nom, age, salaire_brut, is_etranger, dons, pays], (err) => {
+                    if (err) return res.status(400).send({error: err})
+                    console.log("Enregistrement agent reussi")
+                })
+
+                console.log('encryptedPassword', encryptedPassword)
+                res.send({msg: "Utilisateur créé avec succès"})
+            })
+        } catch (e) {
+            const status_code = e.status || 500
+            res.status(status_code).send({error: e})
+        }
+
+
+        /*  db.run(insert_sql, [nom, age, salaire_brut, is_etranger, dons, pays], (err) => {
+              if (err) return res.status(400).send({error: err})
+              console.log("Enregistrement agent reussi")
+          })
+          res.status(201).send({msg: "Enregistrement reussi"})*/
+    } catch (e) {
+        const status_code = e.status || 500
+        res.status(status_code).send({error: err})
+    }
 })
 
 app.listen(PORT, '0.0.0.0', () => {
