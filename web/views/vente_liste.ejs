@@ -8,40 +8,68 @@
 
     <div class="row mt-5">
         <div class="col-7">
-            <h3 class="text-center mb-5"><%= count %> ventes</h3>
+            <h3 class="text-center mb-5"><%= ventes.length %> ventes</h3>
 
             <table class="table">
                 <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Produits</th>
-                    <th scope="col">Prix</th>
+                    <th scope="col">Produit</th>
+                    <th scope="col">Total</th>
                     <th scope="col">Status</th>
+                    <th scope="col">Action</th>
                 </tr>
                 </thead>
                 <tbody>
                 <% ventes.forEach((v)=>{ %>
                     <tr>
                         <th scope="row">1</th>
-                        <td><%= v.nom %></td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
+                        <td><%= v.produit %></td>
+                        <td><%= v.prix * v.quantite %></td>
+                        <td style="color:<%= v.color %>"><%= v.status %></td>
+                        <td>
+                            <button type="button"
+                                    onclick="showDetails('<%= v.ID %>')"
+                                    class="btn py-1 btn-outline-info text-center"
+                            >Details
+                            </button>
+                        </td>
                     </tr>
                 <% }); %>
 
             </table>
         </div>
-        <div class="col-5 ps-5">
+        <div class="col-5 ps-5 border mb-5">
             <h3 class="text-center">Valider la vente</h3>
-            <p style="color:red" id="errorID" class="text-center"></p>
-            <form>
-                <div class="form-group identifiant_qr">
-                    <label for="usr">Valider la vente</label>
-                    <input type="text" required class="form-control" id="session_id">
-                </div>
+            <ul class="list-group">
+                <li class="list-group-item">Produit:
+                    <b class="produitID"></b></li>
+                <li class="list-group-item">Prix:
+                    <b class="prixID"></b></li>
+                <li class="list-group-item">Quantité:
+                    <b class="qteID"></b></li>
+                <li class="list-group-item">Longitude:
+                    <b class="longID"></b></li>
+                <li class="list-group-item">Latitude:
+                    <b class="latID"></b></li>
+                <br>
+                <li class="list-group-item"><b>Total</b>:
+                    <b class="latID"></b></li>
+            </ul>
 
+            <form class="mt-3">
 
-                <button type="submit" class="validerBtn btn btn-primary text-center d-flex">Valider</button>
+                <select class="form-select" aria-label="identifiant_qr Default select example">
+                    <option selected>Changer de status</option>
+                    <option value="Validé">Validé</option>
+                    <option value="Rejeté">Rejeté</option>
+                </select>
+                <br>
+
+                <button type="submit"
+                        class="validerBtn btn btn-primary
+                        text-center d-flex">Valider
+                </button>
             </form>
         </div>
     </div>
@@ -52,6 +80,14 @@
 
 <%- include('partials/scripts') %>
 <script>
+
+    const showDetails = (id) => {
+        var data = JSON.parse('<%- JSON.stringify(ventes) %>');
+        const rowID = parseInt(id)
+        const row = data.find(e => e.ID === rowID)
+        console.log(rowID, row)
+    }
+
     $(document).ready(() => {
         var errorID = $("#errorID")
 

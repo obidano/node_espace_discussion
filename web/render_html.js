@@ -14,8 +14,8 @@ const db = new sqlite.Database(`./${DB_NAME}`, sqlite.OPEN_READWRITE, (err) => {
     if (err) return console.error(err)
 })
 
-const select_agent = () => new Promise((resolve, reject) => {
-    sql = "SELECT * FROM agent"
+const select_ventes = () => new Promise((resolve, reject) => {
+    sql = "SELECT * FROM ventes"
 
     db.all(sql, [], async (err, rows) => {
         if (err) reject(err)
@@ -64,11 +64,19 @@ const r_submit_uid = async (req, res) => {
 
 const r_vente_liste = async (req, res) => {
     try {
-        const ventes = await select_agent()
+        const ventes = await select_ventes()
         console.log(ventes.length, ventes)
+        const colors_choices = {
+            "En attente": 'grey',
+            "Validé": "green",
+            "Rejeté": "red"
+        }
         res.render('vente_liste.ejs', {
             title: "Liste des ventes",
-            ventes: ventes, count: ventes.length
+            ventes_str:JSON.stringify(ventes),
+            ventes: ventes.map((e) => ({
+                ...e, 'color': colors_choices[e.status]
+            }))
         })
     } catch (e) {
         print(e)

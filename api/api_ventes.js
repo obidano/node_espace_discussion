@@ -4,6 +4,7 @@ require("dotenv").config();
 const sqlite = require('sqlite3').verbose()
 const url = require("url");
 const {insert_ventes_sql} = require("../db/init_db");
+const {articles} = require("../utils/constantes");
 
 const {DB_NAME} = process.env;
 
@@ -22,12 +23,12 @@ const select_vente = () => new Promise((resolve, reject) => {
 
 const insert_vente = (user_id, data) => new Promise(async (resolve, reject) => {
     const {
-        produit, prix, quantite,
-        longitude, latitude, status
-    } = user_id;
+        produit, prix, quantite, longitude, latitude, status
+    } = data;
+    console.log(user_id, data)
 
-    db.run(insert_ventes_sql, [produit, prix, quantite, longitude,
-        latitude, status, user_id], function (err) {
+    db.run(insert_ventes_sql, [produit, prix, quantite,
+        longitude, latitude, "En attente", user_id], function (err) {
         if (err) reject(err)
         resolve(this)
     });
@@ -40,9 +41,16 @@ const api_create_vente = async (req, res) => {
     console.log("req body", req.body)
     const {user_id} = req.user
 
+    const {produit, prix} = req.body
+
+    const recherche = articles.find((e) => e['name'] === produit)
+    if (!recherche) return res.status(400).send({error: `Article '${produit}' non reconnu `})
+    console.log("recherche", recherche)
+    if (recherche.prix !== parseInt(prix)) return res.status(400).send({error: `Le prix envoyé ne correspond pas à l'article '${produit}'`})
+
     try {
         await insert_vente(user_id, req.body)
-        res.status(201).send({msg: "Agent créé avec succès"})
+        res.status(201).send({msg: "Vente enregistrée avec succès"})
 
     } catch (e) {
         const status_code = e.status || 400
@@ -82,7 +90,5 @@ const api_get_vente_v2 = async (req, res) => {
 }
 
 module.exports = {
-    api_create_vente,
-    api_get_vente_v1,
-    api_get_vente_v2
+    api_create_vente, api_get_vente_v1, api_get_vente_v2
 }
