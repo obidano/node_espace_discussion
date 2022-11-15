@@ -4,9 +4,13 @@
 <%- include('header') %>
 <body>
 
-<div class="container d-flex align-items-center justify-content-center mt-5  px-5 border">
+<div class="container   mt-5  px-5 border">
 
-    <h3>Scannez ce QR Code pour vous authentifiez</h3>
+    <h3 class="text-center mb-5">Scannez ce QR Code pour vous authentifiez</h3>
+
+    <div class="container text-center mt-5">
+        <img src='<%= qr_data %>' class="qr_image" alt='QR Code Image'/>
+    </div>
 
 </div>
 

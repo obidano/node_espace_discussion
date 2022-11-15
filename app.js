@@ -27,17 +27,20 @@ db.run(create_sql)
 
 const PORT = API_PORT;
 
-app.use(bodyParser.json())
-app.use(cors());
-
 const node_path = path.join(__dirname, '/node_modules/')
 const boostrap_path = path.join(node_path, 'bootstrap/dist/')
 console.log(node_path)//
 console.log(boostrap_path)//
 app.use('/bootstrap', express.static(boostrap_path));
+const qr = require("qrcode");
 
 app.set('view engine', 'ejs')
 app.set('views', './web/views')
+
+app.use(bodyParser.json())
+app.use(cors());
+
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/', r_index)
 

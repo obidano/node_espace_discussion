@@ -1,5 +1,13 @@
 const {parse} = require("url");
+const qr = require("qrcode");
+const uuid = require('uuid');
 
+const generate_qrcode = (data) => new Promise((resolve, reject) => {
+    qr.toDataURL(data, (err, src) => {
+        if (err) reject(err);
+        resolve(src);
+    });
+})
 
 const default_render = (req, res) => {
     const url_info = parse(req.url, true)
@@ -8,8 +16,19 @@ const default_render = (req, res) => {
     res.send({message: "Welcome to my ODC API Portal"})
 }
 
-const r_index = (req, res) => {
-    res.render('index', {title: 'ODC'})
+const r_index = async (req, res) => {
+    try {
+        const id = uuid.v4()
+        var qr_data = await generate_qrcode(id)
+        res.render('index', {title: 'ODC | Authentification', qr_data, id})
+
+    } catch (e) {
+        print(e)
+        const status_code = e.status || 400
+        res.status(status_code).send({error: e})
+
+    }
+
 }
 
 
