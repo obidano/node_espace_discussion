@@ -7,7 +7,7 @@ const {insert_ventes_sql} = require("../db/init_db");
 const {articles} = require("../utils/constantes");
 
 const {DB_NAME} = process.env;
-
+let sql;
 
 const db = new sqlite.Database(`./${DB_NAME}`, sqlite.OPEN_READWRITE, (err) => {
     if (err) return console.error(err)
@@ -27,9 +27,22 @@ const insert_vente = (user_id, data) => new Promise(async (resolve, reject) => {
     } = data;
     console.log(user_id, data)
 
-    db.run(insert_ventes_sql, [produit, prix, quantite,
-        longitude, latitude, "En attente", user_id], function (err) {
+    db.run(insert_ventes_sql, [produit, prix, quantite, longitude, latitude, "En attente", user_id], function (err) {
         if (err) reject(err)
+        resolve(this)
+    });
+})
+
+
+const update_vente = (id, status) => new Promise(async (resolve, reject) => {
+    sql = "UPDATE ventes set status = ? where ID = ?"
+    const params = [status, id]
+    // console.log("[status, id]", params)
+    db.run(sql, params, function (err) {
+        if (err) {
+            // console.error(err)
+            reject(err)
+        }
         resolve(this)
     });
 })
@@ -51,6 +64,28 @@ const api_create_vente = async (req, res) => {
     try {
         await insert_vente(user_id, req.body)
         res.status(201).send({msg: "Vente enregistrée avec succès"})
+
+    } catch (e) {
+        const status_code = e.status || 400
+        res.status(status_code).send({error: e})
+    }
+}
+
+const api_update_vente = async (req, res) => {
+    const url_info = url.parse(req.url, true)
+    console.log("URL", url_info.path)
+    console.log("req body", req.body)
+
+    const {status, id} = req.body
+    const vente_id = parseInt(id)
+
+    const avalaible_status = ['Validé', 'Rejeté']
+    if (avalaible_status.indexOf(status) === -1)
+        return res.status(400).send({error: "Status non valide"})
+
+    try {
+        await update_vente(vente_id, status)
+        res.status(200).send({msg: "Status modifié avec succès"})
 
     } catch (e) {
         const status_code = e.status || 400
@@ -90,5 +125,5 @@ const api_get_vente_v2 = async (req, res) => {
 }
 
 module.exports = {
-    api_create_vente, api_get_vente_v1, api_get_vente_v2
+    api_create_vente, api_update_vente, api_get_vente_v1, api_get_vente_v2
 }

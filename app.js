@@ -1,5 +1,5 @@
 const {api_create_user, api_auth_user} = require("./api/api_user");
-const {api_create_vente, api_get_vente_v2, api_get_vente_v1} = require("./api/api_ventes");
+const {api_create_vente, api_get_vente_v2, api_get_vente_v1, api_update_vente} = require("./api/api_ventes");
 const {api_pays_v1, api_pays_v2} = require("./api/api_pays");
 const {api_taux} = require("./api/api_taux");
 const {r_index, r_submit_uid, r_vente_liste} = require("./web/render_html");
@@ -9,6 +9,8 @@ require('log-timestamp');
 require("dotenv").config();
 
 // modules
+const jwt = require("jsonwebtoken");
+const {APP_KEY} = process.env;
 const express = require('express')
 const app = express()
 const cors = require('cors')
@@ -85,6 +87,7 @@ app.get('/api/ventes/v1', auth_mid, api_get_vente_v1)
 app.get('/api/ventes/v2', auth_mid, api_get_vente_v2)
 
 app.post('/api/vente', auth_mid, api_create_vente)
+app.put('/api/vente', auth_mid, api_update_vente)
 
 app.post('/api/auth', api_auth_user)
 // create user API
@@ -107,14 +110,28 @@ io.on('connection', (socket) => {
 
     })
 
-    socket.on('checkSession', (roomID) => {
-        console.log('checkSession', roomID)
-        if (roomID in rooms) {
-            console.log("checkSession", roomID)
-            io.in(roomID).emit("checkMySession", true);
-        } else {
-            socket.emit('error', "Cet identifiant n'existe pas ou n'est plus connecté")
+    socket.on('updateVente', (msg) => {
+        socket.broadcast.emit('updateVenteNotif', msg);
+    })
+
+    socket.on('checkSession', (sessionData) => {
+        const {session, token} = sessionData
+        console.log('checkSession', sessionData)
+        try {
+            jwt.verify(token, APP_KEY);
+            if (session in rooms) {
+                console.log("checkSession", sessionData)
+                io.in(session).emit("checkMySession", token);
+                socket.emit('success', "Authentification reussie")
+
+            } else {
+                socket.emit('error', "Cet identifiant n'existe pas ou n'est plus connecté")
+            }
+        } catch (err) {
+            console.log("error", err)
+            socket.emit('error', "Le token n'est pas valide")
         }
+
 
     })
 

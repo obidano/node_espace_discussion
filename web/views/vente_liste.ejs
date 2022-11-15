@@ -22,7 +22,7 @@
                 </thead>
                 <tbody>
                 <% ventes.forEach((v)=>{ %>
-                    <tr>
+                    <tr id="<%= 'row' + v.ID %>">
                         <th scope="row">1</th>
                         <td><%= v.produit %></td>
                         <td><%= v.prix * v.quantite %></td>
@@ -39,28 +39,28 @@
 
             </table>
         </div>
-        <div class="col-5 ps-5 border mb-5">
+        <div class="col-5 ps-5 border mb-5 pb-5">
             <h3 class="text-center">Valider la vente</h3>
             <ul class="list-group">
                 <li class="list-group-item">Produit:
-                    <b class="produitID"></b></li>
+                    <b class="produitID float-end"></b></li>
                 <li class="list-group-item">Prix:
-                    <b class="prixID"></b></li>
+                    <b class="prixID float-end"></b></li>
                 <li class="list-group-item">Quantité:
-                    <b class="qteID"></b></li>
+                    <b class="qteID float-end"></b></li>
                 <li class="list-group-item">Longitude:
-                    <b class="longID"></b></li>
+                    <b class="longID float-end"></b></li>
                 <li class="list-group-item">Latitude:
-                    <b class="latID"></b></li>
+                    <b class="latID float-end"></b></li>
                 <br>
                 <li class="list-group-item"><b>Total</b>:
-                    <b class="latID"></b></li>
+                    <b class="total float-end"></b></li>
             </ul>
 
-            <form class="mt-3">
+            <form class="mt-3" style="display: none">
 
-                <select class="form-select" aria-label="identifiant_qr Default select example">
-                    <option selected>Changer de status</option>
+                <select class="form-select" required aria-label="identifiant_qr Default select example">
+                    <option selected value="">Changer de status</option>
                     <option value="Validé">Validé</option>
                     <option value="Rejeté">Rejeté</option>
                 </select>
@@ -80,21 +80,91 @@
 
 <%- include('partials/scripts') %>
 <script>
+    let rowSelected;
+    let selectedDataRow;
+    let allData = []
+
+    const socket = io()
 
     const showDetails = (id) => {
-        var data = JSON.parse('<%- JSON.stringify(ventes) %>');
+        $('form').show()
+
+        $('table tr').css({backgroundColor: '#ffffff'})
+
         const rowID = parseInt(id)
-        const row = data.find(e => e.ID === rowID)
-        console.log(rowID, row)
+        selectedDataRow = allData.find(e => e.ID === rowID)
+        console.log(rowID, selectedDataRow.status)
+
+        if (selectedDataRow.status !== 'En attente') {
+            $('select').val(selectedDataRow.status)
+        } else {
+            $('select').val('')
+        }
+        $(".produitID").html(selectedDataRow.produit)
+        $(".prixID").html(selectedDataRow.prix)
+        $(".qteID").html(selectedDataRow.quantite)
+        $(".longID").html(selectedDataRow.longitude)
+        $(".latID").html(selectedDataRow.latitude)
+        $(".total").html(selectedDataRow.prix * selectedDataRow.quantite)
+
+        rowSelected = $(`#row${rowID}`)
+        rowSelected.css({backgroundColor: '#f6f6f6'})
+        // console.log('rowSelected', rowSelected)
     }
-
+    const token = localStorage.getItem('token')
+    if (!token) {
+        window.location.href = '/';
+    }
     $(document).ready(() => {
-        var errorID = $("#errorID")
+        allData = JSON.parse('<%- JSON.stringify(ventes) %>');
 
+        var errorID = $("#errorID")
+        $('form').hide()
+        $('table tr').css({backgroundColor: '#ffffff'})
 
         $('form').on('submit', (e) => {
             e.preventDefault()
             errorID.html('')
+
+            const headers = {
+                "Accepts": "application/json; charset=utf-8",
+                "Authorization": `Bearer ${token}`
+            }
+            const new_status = $('select').val()
+            const request_body = {
+                "status": new_status,
+                "id": selectedDataRow.ID
+            }
+            $.ajax({
+                url: 'http://localhost:3200/api/vente',
+                type: 'PUT',
+                headers,
+                dataType: 'json',
+                data: request_body,
+                success: function (data, textStatus, xhr) {
+                    console.log(data);
+                    console.log(textStatus);
+                    console.log(xhr);
+
+                    selectedDataRow.status = new_status
+                    const colors_choices = {
+                        "En attente": 'grey',
+                        "Validé": "green",
+                        "Rejeté": "red"
+                    }
+                    const color = colors_choices[new_status]
+
+                    socket.emit('updateVente', request_body)
+                    const status_td = rowSelected.children('td').eq(2)
+                    status_td.html(new_status).css({color: color})
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.log('Error in Operation');
+                    console.log(xhr);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+            });
 
         })
     })

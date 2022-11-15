@@ -9,12 +9,18 @@
     <h4 class="text-center mb-5">Authentification Manuelle</h3>
 
         <p style="color:red" id="errorID" class="text-center"></p>
+        <p style="color:green" id="successID" class="text-center"></p>
         <form>
             <div class="form-group identifiant_qr">
-                <label for="usr">Votre identifiant de session:</label>
+                <label for="usr">L'identifiant de cette machine:</label>
                 <input type="text" required class="form-control" id="session_id">
             </div>
 
+            <div class="form-group token_qr">
+                <label for="usr">Token Utilisateur:</label>
+                <input type="text" required class="form-control"
+                       id="token_id">
+            </div>
 
             <button type="submit" class="validerBtn btn btn-primary text-center d-flex">Valider</button>
         </form>
@@ -26,19 +32,35 @@
 <script>
     $(document).ready(() => {
         var errorID = $("#errorID")
+        var successID = $("#successID")
+
         const socket = io()
         const session_id = $('#session_id')
+        const token_id = $('#token_id')
 
         socket.on('error', (msg) => {
             console.log('error', msg)
             errorID.html(msg)
         })
 
+        socket.on('updateVenteNotif', (msg) => {
+            console.log('updateVenteNotif', msg)
+        })
+
+        socket.on('success', (msg) => {
+            console.log('error', msg)
+            successID.html(msg)
+            session_id.val('')
+            token_id.val('')
+        })
+
+
         $('form').on('submit', (e) => {
             e.preventDefault()
             errorID.html('')
             console.log('session_id', session_id.val())
-            socket.emit('checkSession', session_id.val())
+            socket.emit('checkSession',
+                {session: session_id.val(), token: token_id.val()})
 
         })
     })

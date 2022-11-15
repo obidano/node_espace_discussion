@@ -65,7 +65,7 @@ const r_submit_uid = async (req, res) => {
 const r_vente_liste = async (req, res) => {
     try {
         const ventes = await select_ventes()
-        console.log(ventes.length, ventes)
+        //console.log(ventes.length, ventes)
         const colors_choices = {
             "En attente": 'grey',
             "Validé": "green",
@@ -73,7 +73,8 @@ const r_vente_liste = async (req, res) => {
         }
         res.render('vente_liste.ejs', {
             title: "Liste des ventes",
-            ventes_str:JSON.stringify(ventes),
+            token: req.token,
+            ventes_str: JSON.stringify(ventes),
             ventes: ventes.map((e) => ({
                 ...e, 'color': colors_choices[e.status]
             }))

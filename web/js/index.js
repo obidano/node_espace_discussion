@@ -8,9 +8,10 @@ $(document).ready(() => {
         // console.log("Message server", msg)
     })
 
-    socket.on("checkMySession", (msg) => {
-        console.log("redirection", msg)
-        if (msg) {
+    socket.on("checkMySession", (token) => {
+        console.log("redirection", token)
+        if (token) {
+            localStorage.setItem('token', token)
             window.location.href = '/ventes'
         }
     })

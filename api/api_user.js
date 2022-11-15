@@ -68,8 +68,9 @@ const api_auth_user = async (req, res) => {
     console.log("req body", req.body)
 
     try {
-        const {username, password} = req.body;
-        const rows = await select_user(username);
+        const {login, password} = req.body;
+        const rows = await select_user(login);
+        console.log(rows)
         if (rows.length === 0) return res.status(400).send({error: "Cet utilisateur n'existe pas"})
         const user = rows[0]
 
@@ -78,7 +79,7 @@ const api_auth_user = async (req, res) => {
         if (!pwd_compare) return res.status(400).send({error: "Mot de passe incorrect"})
 
         const token = jwt.sign(
-            {user_id: user.ID, username},
+            {user_id: user.ID, username: login},
             APP_KEY,
             {
                 expiresIn: EXPIRATION_TIME,
