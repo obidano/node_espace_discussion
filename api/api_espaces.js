@@ -78,7 +78,6 @@ const api_create_espace = async (req, res) => {
     }
 }
 
-
 module.exports = {
     api_create_espace,
     api_get_espaces

@@ -126,6 +126,11 @@ io.on('connection', (socket) => {
 
     })
 
+    socket.on('souscrire', function (uId) {
+        console.log('room', uId)
+        socket.join("espace_" + uId);
+    });
+
     socket.on('setRoomId', function (uId) {
         rooms[uId] = true
         socket.UID = uId
