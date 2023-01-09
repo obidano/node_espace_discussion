@@ -54,7 +54,10 @@ const api_create_user = async (req, res) => {
                 expiresIn: EXPIRATION_TIME,
             }
         );
-        res.status(201).send({msg: "Utilisateur créé avec succès", token})
+        res.status(201).send({
+            msg: "Utilisateur créé avec succès",
+            token, user: {id: lastID, username}
+        })
 
     } catch (e) {
         const status_code = e.status || 400
@@ -85,7 +88,10 @@ const api_auth_user = async (req, res) => {
                 expiresIn: EXPIRATION_TIME,
             }
         );
-        return res.status(200).send({msg: "Authentification reussie", token: token})
+        return res.status(200).send({
+            msg: "Authentification reussie",
+            token: token, user: {id: user.ID, username: login}
+        })
 
 
     } catch (e) {

@@ -14,8 +14,17 @@ const db = new sqlite.Database(`./${DB_NAME}`, sqlite.OPEN_READWRITE, (err) => {
 })
 
 const select_vente = () => new Promise((resolve, reject) => {
-    sql = "SELECT * FROM ventes"
+    sql = "SELECT a.*, b.username FROM ventes as a INNER JOIN user as b on a.user_id=b.ID "
     db.all(sql, [], async (err, rows) => {
+        if (err) reject(err)
+        resolve(rows)
+    })
+})
+
+const my_select_vente = (user_id) => new Promise((resolve, reject) => {
+    sql = "SELECT a.*, b.username FROM ventes as a INNER JOIN user " +
+        "as b on a.user_id=b.ID where b.ID=?"
+    db.all(sql, [user_id], async (err, rows) => {
         if (err) reject(err)
         resolve(rows)
     })
@@ -100,7 +109,7 @@ const api_get_vente_v1 = async (req, res) => {
 
     try {
         const rows = await select_vente();
-        if (rows.length < 1) return res.status(400).send({error: "Liste agents vide"})
+        if (rows.length < 1) return res.status(400).send({error: "Liste vente vide"})
         res.send({data: rows})
     } catch (e) {
         const status_code = e.status || 400
@@ -115,7 +124,24 @@ const api_get_vente_v2 = async (req, res) => {
 
     try {
         const rows = await select_vente();
-        if (rows.length < 1) return res.status(400).send({error: "Liste agents vide"})
+        if (rows.length < 1) return res.status(400).send({error: "Liste vente vide"})
+        res.send(rows)
+
+    } catch (e) {
+        const status_code = e.status || 400
+        res.status(status_code).send({error: e})
+    }
+}
+
+const api_get_my_vente = async (req, res) => {
+    const url_info = url.parse(req.url, true)
+    console.log("URL", url_info.path)
+    console.log("req body", req.body)
+    console.log("req user", req.user)
+
+    try {
+        const rows = await my_select_vente(req.user.user_id);
+        if (rows.length < 1) return res.status(400).send({error: "Liste vente vide"})
         res.send(rows)
 
     } catch (e) {
@@ -125,5 +151,6 @@ const api_get_vente_v2 = async (req, res) => {
 }
 
 module.exports = {
-    api_create_vente, api_update_vente, api_get_vente_v1, api_get_vente_v2
+    api_create_vente, api_update_vente, api_get_vente_v1, api_get_vente_v2,
+    api_get_my_vente
 }
