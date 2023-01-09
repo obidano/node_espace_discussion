@@ -1,0 +1,32 @@
+<nav class="navbar navbar-expand navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+
+            <img src="img/icon_orange.png" alt="" width="50" height="50">
+            ODC SYS
+        </a>
+
+        <div class="collapse navbar-collapse ms-5" id="navbarTogglerDemo01">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <li class="nav-item">
+                    <a class="nav-link <%= page === 'home' && 'active' %>" href="/">Auth QR Code</a>
+                </li>
+                <li class="nav-item">
+                    <a target="_blank" class="nav-link <%= page === 'manuel' && 'active' %>" href="/submit-qr">Auth
+                        Manuel</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= page === 'ventes' && 'active' %>" aria-current="page"
+                       href="/ventes">Ventes</a>
+                </li>
+            </ul>
+
+            <div class="d-flex">
+                <button id="deconnexionBtn" class="btn btn-outline-warning" style="display: none" type="button">
+                    Deconnexion
+                </button>
+            </div>
+        </div>
+    </div>
+</nav>

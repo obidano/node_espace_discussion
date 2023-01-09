@@ -4,8 +4,10 @@
 <%- include('partials/header') %>
 <body>
 
-<div class="container   mt-5  px-5 border">
+<%- include('partials/navbar') %>
 
+
+<div class="container   mt-5 pt-5  px-5 border">
     <div class="row mt-5">
         <div class="col-7">
             <h3 class="text-center mb-5"><%= ventes.length %> ventes</h3>
@@ -14,6 +16,7 @@
                 <thead>
                 <tr>
                     <th scope="col">#</th>
+                    <th scope="col">Vendeur</th>
                     <th scope="col">Produit</th>
                     <th scope="col">Total</th>
                     <th scope="col">Status</th>
@@ -23,7 +26,8 @@
                 <tbody>
                 <% ventes.forEach((v)=>{ %>
                     <tr id="<%= 'row' + v.ID %>">
-                        <th scope="row">1</th>
+                        <th scope="row"><%= v.ID %></th>
+                        <th scope="row"><%= v.username %></th>
                         <td><%= v.produit %></td>
                         <td><%= v.prix * v.quantite %></td>
                         <td style="color:<%= v.color %>"><%= v.status %></td>
@@ -52,6 +56,8 @@
                     <b class="longID float-end"></b></li>
                 <li class="list-group-item">Latitude:
                     <b class="latID float-end"></b></li>
+                <li class="list-group-item">Vendeur:
+                    <b class="sellerID float-end"></b></li>
                 <br>
                 <li class="list-group-item"><b>Total</b>:
                     <b class="total float-end"></b></li>
@@ -106,6 +112,7 @@
         $(".longID").html(selectedDataRow.longitude)
         $(".latID").html(selectedDataRow.latitude)
         $(".total").html(selectedDataRow.prix * selectedDataRow.quantite)
+        $(".sellerID").html(selectedDataRow.username)
 
         rowSelected = $(`#row${rowID}`)
         rowSelected.css({backgroundColor: '#f6f6f6'})

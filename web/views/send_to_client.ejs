@@ -7,26 +7,21 @@
 <%- include('partials/navbar') %>
 
 <div class="container   mt-5  px-5 pt-5 border">
-    <h4 class="text-center mb-5">Authentification Manuelle</h3>
+    <h3 class="text-center mb-5">Envoie au Client</h3>
 
         <p style="color:red" id="errorID" class="text-center"></p>
         <p style="color:green" id="successID" class="text-center"></p>
         <form>
-            <div class="form-group identifiant_qr">
-                <label for="usr">L'identifiant de cette machine:</label>
-                <input type="text" required class="form-control" id="session_id">
+            <div class="form-group message">
+                <label for="usr">votre message:</label>
+                <input type="text" required class="form-control" id="message_id">
             </div>
 
-            <div class="form-group token_qr">
-                <label for="usr">Token Utilisateur:</label>
-                <input type="text" required class="form-control"
-                       id="token_id">
-            </div>
+
 
             <button type="submit" class="validerBtn btn btn-dark text-center d-flex">Valider</button>
         </form>
 
-        <p class="text-center"><a href="/">Authentification par QR Code</a></p>
 
 </div>
 
@@ -34,20 +29,14 @@
 <%- include('partials/scripts') %>
 <script>
     $(document).ready(() => {
-        const session = localStorage.getItem('session')
-        if (!session) {
-            window.location.href = '/'
-            return;
-        }
+
 
         var errorID = $("#errorID")
         var successID = $("#successID")
 
         const socket = io()
-        const session_id = $('#session_id')
-        const token_id = $('#token_id')
+        const message_id = $('#message_id')
 
-        session_id.val(session)
         socket.on('error', (msg) => {
             console.log('error', msg)
             errorID.html(msg)
@@ -60,7 +49,6 @@
         socket.on('success', (msg) => {
             console.log('error', msg)
             successID.html(msg)
-            session_id.val('')
             token_id.val('')
         })
 
@@ -68,9 +56,9 @@
         $('form').on('submit', (e) => {
             e.preventDefault()
             errorID.html('')
-            console.log('session_id', session_id.val())
-            socket.emit('checkSession',
-                {session: session_id.val(), token: token_id.val()})
+            console.log('session_id', message_id.val())
+            socket.emit('sendToClient',
+                {message: message_id.val()})
 
         })
     })

@@ -1,3 +1,19 @@
 <script src="/jquery/jquery.min.js"></script>
 <script src="/bootstrap/js/bootstrap.min.js"></script>
 <script src="socket/socket.io.js"></script>
+<script>
+    $(document).ready(() => {
+        const token = localStorage.getItem('token')
+        const btn = $('#deconnexionBtn')
+        console.log("token", token)
+
+        if (token) {
+            btn.show()
+        }
+
+        btn.on('click', (e) => {
+            localStorage.removeItem("token")
+            window.location.href = '/'
+        })
+    })
+</script>
