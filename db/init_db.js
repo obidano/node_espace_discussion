@@ -1,44 +1,42 @@
 const create_user_sql = `
 CREATE TABLE IF NOT EXISTS user(ID INTEGER PRIMARY KEY, 
-                                username VARCHAR, 
-                                password VARCHAR
-                               );`
+                                identifiant VARCHAR);`
 
-const create_ventes_sql = `
-CREATE TABLE IF NOT EXISTS ventes (ID INTEGER PRIMARY KEY, 
-                                produit VARCHAR,                            
-                                prix INTEGER, 
-                                quantite INTEGER, 
-                                 longitude VARCHAR, 
-                                latitude VARCHAR, 
-                                status VARCHAR,
-                                user_id INTEGER NOT NULL,  
-                                 FOREIGN KEY (user_id)
-                            REFERENCES user (user_id) );    
+const create_espace_sql = `
+CREATE TABLE IF NOT EXISTS espaces (ID INTEGER PRIMARY KEY, 
+                                name VARCHAR,                            
+                                description INTEGER, 
+                                creator_id INTEGER NOT NULL,  
+                                 FOREIGN KEY (creator_id)
+                            REFERENCES user (creator_id) );    
                                 `
 
-const create_locataires_sql = `
-CREATE TABLE IF NOT EXISTS locataires (ID INTEGER PRIMARY KEY, 
-                                nom VARCHAR,                            
-                                nombre INTEGER, 
-                                telephone VARCHAR
+const create_messages_sql = `
+CREATE TABLE IF NOT EXISTS message (ID INTEGER PRIMARY KEY, 
+                                message TEXT,                            
+                                time TEXT, 
+                                espace_id INTEGER NOT NULL,  
+                               sender_id INTEGER NOT NULL,  
+                                 FOREIGN KEY (sender_id)
+                            REFERENCES user (sender_id) ,
+                            FOREIGN KEY (espace_id)
+                            REFERENCES espaces (espace_id) 
                                  );    
                                 `
-const insert_ventes_sql = `INSERT INTO ventes (produit,prix,quantite,
-                    longitude,latitude,status,user_id)
-                  VALUES (?,?,?,?,?,?, ?)`
+const insert_user_sql = `INSERT INTO user (identifiant) VALUES (?)`
+const insert_espace_sql = `INSERT INTO espaces (name,description,creator_id)
+                  VALUES (?,?,?)`
 
-const insert_user_sql = `INSERT INTO user (username,password)
-                  VALUES (?,?)`
 
-const insert_locataire_sql = `INSERT INTO locataires (nom,nombre,telephone)
-                  VALUES (?,?, ?)`
+const insert_message_sql = `INSERT INTO message (message,time,espace_id, sender_id)
+                  VALUES (?,datetime('now'),?, ?)`
 //db.run(sql)
 module.exports = {
     create_user_sql,
-    create_ventes_sql,
-    create_locataires_sql,
-    insert_ventes_sql,
+    create_espace_sql,
+    create_messages_sql,
+
     insert_user_sql,
-    insert_locataire_sql
+    insert_espace_sql,
+    insert_message_sql
 };

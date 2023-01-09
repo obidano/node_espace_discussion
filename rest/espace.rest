@@ -1,0 +1,11 @@
+POST http://localhost:3200/api/espace
+Content-Type: application/json
+
+{
+  "name": "odc4",
+  "description": "Lorem IPSUM",
+  "creator_id": 1
+}
+###
+GET http://localhost:3200/api/espace
+Content-Type: application/json

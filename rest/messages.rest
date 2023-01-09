@@ -1,0 +1,12 @@
+POST http://localhost:3200/api/message
+Content-Type: application/json
+
+{
+  "message": "odc4",
+  "sender_id": 1,
+  "espace_id": 1
+}
+
+###
+GET http://localhost:3200/api/messages?espace_id=2
+Content-Type: application/json
