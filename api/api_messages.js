@@ -25,9 +25,9 @@ const insert_message = (data) => new Promise(async (resolve, reject) => {
 })
 
 const select_message = (id) => new Promise((resolve, reject) => {
-    sql = "SELECT a.message, a.time,a.sender_id as 'sender', " +
+    sql = "SELECT a.message, a.time,a.sender_id as 'sender_id', " +
         "b.identifiant as 'senderName'," +
-        " c.name as 'espaceName', c.ID as 'espaceID' " +
+        " c.name as 'espaceName', c.ID as 'espace_id' " +
         "FROM message as a " +
         " inner join user as b on a.sender_id=b.id" +
         " inner join espaces as c on a.espace_id=c.id " +
@@ -39,9 +39,9 @@ const select_message = (id) => new Promise((resolve, reject) => {
     })
 })
 const select_messages = (espace_id) => new Promise((resolve, reject) => {
-    sql = "SELECT a.message, a.time,a.sender_id as 'sender', " +
+    sql ="SELECT a.message, a.time,a.sender_id as 'sender_id', " +
         "b.identifiant as 'senderName'," +
-        " c.name as 'espaceName', c.ID as 'espaceID' " +
+        " c.name as 'espaceName', c.ID as 'espace_id' " +
         "FROM message as a " +
         " inner join user as b on a.sender_id=b.id" +
         " inner join espaces as c on a.espace_id=c.id " +

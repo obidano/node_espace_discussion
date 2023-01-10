@@ -2,5 +2,5 @@ POST http://localhost:3200/api/user
 Content-Type: application/json
 
 {
-  "identifiant": "odc1"
+  "identifiant": "odc2"
 }
