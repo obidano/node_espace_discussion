@@ -1,4 +1,4 @@
-const {api_create_user} = require("./api/api_user");
+// const {api_create_user} = require("./api/api_user");
 
 const {create_user_sql, create_espace_sql, create_messages_sql} = require("./db/init_db");
 
@@ -52,8 +52,8 @@ app.use(function (req, res, next) {
 
 // middleware
 const auth_mid = require('./middleware')
-const {api_create_espace, api_get_espaces} = require("./api/api_espaces");
-const {api_create_message, api_get_messages} = require("./api/api_messages");
+// const {api_create_espace, api_get_espaces} = require("./api/api_espaces");
+const {api_create_message} = require("./api/api_messages");
 
 // port
 const PORT = API_PORT;
@@ -65,13 +65,13 @@ app.use(cors());
 app.use(bodyParser.urlencoded({extended: false}));
 
 
-app.post('/api/user', api_create_user)
-
-app.post('/api/espace', api_create_espace)
-app.get('/api/espace', api_get_espaces)
-
+// app.post('/api/user', api_create_user)
+//
+// app.post('/api/espace', api_create_espace)
+// app.get('/api/espace', api_get_espaces)
+//
 app.post('/api/message', api_create_message)
-app.get('/api/messages', api_get_messages)
+//app.get('/api/messages', api_get_messages)
 
 
 http.listen(PORT, '0.0.0.0', () => {
