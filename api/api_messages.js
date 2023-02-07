@@ -2,15 +2,15 @@ require('log-timestamp');
 require("dotenv").config();
 const {insert_message_sql} = require("../db/init_db");
 const url = require("url");
-const sqlite = require('sqlite3').verbose()
+//const sqlite = require('sqlite3').verbose()
 
 
 const {DB_NAME} = process.env;
 let sql;
 
-const db = new sqlite.Database(`./${DB_NAME}`, sqlite.OPEN_READWRITE, (err) => {
+const db =""/* new sqlite.Database(`./${DB_NAME}`, sqlite.OPEN_READWRITE, (err) => {
     if (err) return console.error(err)
-})
+})*/
 
 
 const insert_message = (data) => new Promise(async (resolve, reject) => {
@@ -53,15 +53,16 @@ const select_messages = (espace_id) => new Promise((resolve, reject) => {
 })
 
 const api_get_messages = async (req, res) => {
-    const url_info = url.parse(req.url, true)
+    /*const url_info = url.parse(req.url, true)
     console.log("URL", url_info.path)
     console.log("req body", req.body)
-    const {espace_id} = req.query
+    const {espace_id} = req.query*/
 
     try {
-        const rows = await select_messages(espace_id);
+     /*   const rows = await select_messages(espace_id);
         if (rows.length < 1) return res.status(400).send({error: "Liste vide"})
-        res.send(rows)
+        res.send(rows)*/
+        res.send([])
 
     } catch (e) {
         const status_code = e.status || 400
@@ -76,11 +77,11 @@ const api_create_message = async (req, res) => {
     console.log("req body", req.body)
 
     try {
-        const {espace_id} = req.body;
+       /* const {espace_id} = req.body;
         const {lastID} = await insert_message(req.body)
         const row = await select_message(lastID);
-        const new_message = row[0]
-        res.io.in(`espace_${espace_id}`).emit("new_message", new_message)
+        const new_message = row[0]*/
+        res.io.in(`espace_1`).emit("new_message", req.body)
 
         res.status(201).send({msg: "Message enregistré avec succès", message: new_message})
 

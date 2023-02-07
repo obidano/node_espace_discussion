@@ -6,6 +6,20 @@ Content-Type: application/json
   "sender_id": 1,
   "espace_id": 1
 }
+###
+POST http://localhost:3200/api/message?espace_id=1
+Content-Type: application/json
+
+{
+  "article":{"id":4,"nom":"Sel","prixVente":50.0},
+  "category":"Depenses",
+  "date":"07-02-2023 17:45",
+  "description":"","id":0,
+  "identifiant":{"id":"aac0cf53f-b68d-4e42-8f8c-978356b8f18d","name":"Orange"},
+  "montant":1792.0,
+  "prixUnitAchat":36.0,
+  "quantite":202
+}
 
 ###
 GET http://localhost:3200/api/messages?espace_id=1

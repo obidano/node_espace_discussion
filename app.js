@@ -12,7 +12,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const bodyParser = require("body-parser");
-const sqlite = require('sqlite3').verbose()
+//const sqlite = require('sqlite3').verbose()
 var path = require('path');
 const http = require('http').Server(app)
 
@@ -20,6 +20,7 @@ const http = require('http').Server(app)
 const {API_PORT, DB_NAME} = process.env;
 
 // db
+/*
 const db = new sqlite.Database(`./${DB_NAME}`, sqlite.OPEN_READWRITE, (err) => {
     if (err) return console.error(err)
     console.log('Database started...')
@@ -38,6 +39,7 @@ const db = new sqlite.Database(`./${DB_NAME}`, sqlite.OPEN_READWRITE, (err) => {
 
 
 })
+*/
 
 
 // attach http server to socket.io
@@ -103,6 +105,13 @@ io.on('connection', (socket) => {
     socket.on('sendToClient', (msg) => {
         console.log("socket broadcast: sendToClient", msg)
         socket.broadcast.emit('sentFromServer', msg);
+    })
+
+    socket.on('send_message', (msg) => {
+        console.log("socket broadcast: send_message", typeof msg)
+        console.log("socket broadcast: send_message", msg)
+        const request=JSON.parse(msg)
+        io.in(request['room']).emit("new_message", request['data']);
     })
 
     socket.on('checkSessi-on', (sessionData) => {

@@ -1,28 +1,12 @@
 version: '3.8'
 services:
   web:
-    build: .
-    command: npm run dev
+    command: nodemon app.js
+    build: ./
     volumes:
-      - .:/usr/app/
-      - /usr/app/node_modules
+      - .:/app/
+#      - /app/node_modules
     ports:
       - "3300:3200"
 #    depends_on:
 #      - postgres
-
-  db:
-    image: mysql:8.0
-    cap_add:
-      - SYS_NICE
-    restart: always
-    environment:
-      - MYSQL_DATABASE=espace_discussion
-      - MYSQL_ROOT_PASSWORD=mauFJcuf5dhRMQrjj
-    ports:
-      - '3310:3306'
-    volumes:
-      - db:/var/lib/mysql
-volumes:
-  db:
-    driver: local
